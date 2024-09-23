@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chirp - Social Media Feed</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 0 0 10px 10px;
+        }
+        .logo {
+            width: 50px;
+            height: 50px;
+            background-image: url('logo.jpg'); /* Logo image */
+            background-size: cover;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .post {
+            background: #fff;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .image {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .username {
+            font-weight: bold;
+        }
+        .actions {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #007bff;
+        }
+        .trust-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .danger {
+            background-color: #ff4d4d; /* Red */
+        }
+        .warning {
+            background-color: #ffcc00; /* Yellow */
+        }
+        .safe {
+            background-color: #66ff66; /* Green */
+        }
+        .comments {
+            margin-top: 10px;
+            display: none;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 10px;
+        }
+        .comment {
+            margin: 5px 0;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .info-panel {
+            background: white;
+            width: 100%;
+            max-height: 300px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 20px;
+            display: none;
+            overflow-y: auto;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .comment-input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 10px;
+        }
+        /* Flashing effect for trust messages */
+        @keyframes flash {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            40% { opacity: 0; }
+            60% { opacity: 1; }
+            100% { opacity: 1; }
+        }
+
+        .trust-message {
+            animation: flash 3s ease-in-out 1; /* Duration: 3s, Repeat: 1 time */
+        }
+
+        /* Softer colors for trust messages */
+        .trust-message.warning {
+            background-color: #fce68c; /* Softer yellow */
+            color: #7d5c00; /* Darker text */
+        }
+
+        .trust-message.safe {
+            background-color: #c2f0c2; /* Softer green */
+            color: #2f7e2f; /* Darker text */
+        }
+
+        .trust-message.danger {
+            background-color: #f8d7da; /* Softer red */
+            color: #721c24; /* Darker text */
+        }
+
+        /* Like button animation */
+        .btn.liked {
+            animation: likeAnim 0.3s ease;
+        }
+
+        @keyframes likeAnim {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo"></div> <!-- Logo image -->
+        <div class="header-title">Chirp</div>
+    </div>
+
+    <div class="post">
+        <div class="user-info">
+            <img src="p1.jpg" alt="User 1" class="avatar"> <!-- User 1 avatar -->
+            <span class="username">Alice</span>
+        </div>
+        <img src="1.jpg" alt="Post 1" class="image"> <!-- Post 1 image -->
+        <p>This post discusses the importance of mental health awareness on social media. It's vital for users to share their experiences and support each other.</p>
+        <div class="actions">
+            <button class="btn" onclick="toggleLike(this)"><i class="fas fa-thumbs-up"></i> <span class="like-count">15</span></button>
+            <button class="btn" onclick="toggleComments(this)"><i class="fas fa-comment"></i> Comment (5)</button>
+        </div>
+        <div class="trust-message danger" onclick="showInfoPanel('danger', 'This post was flagged due to unverified claims about mental health treatments. Sources include unreliable blogs and personal anecdotes.')">Danger: Unreliable</div>
+        <div class="comments">
+            <div class="comment"><strong>John:</strong> I agree, mental health is so important! 
+                <div class="trust-message safe" onclick="showInfoPanel('safe', 'This comment reflects a general agreement on mental health awareness. No issues identified.')">No Suspicious Activity Detected</div>
+            </div>
+            <div class="comment"><strong>Emma:</strong> This needs more attention from everyone. 
+                <div class="trust-message warning" onclick="showInfoPanel('warning', 'This comment raises awareness but lacks sources. Verify facts before sharing.')">Warning: Credibility in Question</div>
+            </div>
+            <div class="comment"><strong>Mike:</strong> It's a double-edged sword for sure. 
+                <div class="trust-message safe" onclick="showInfoPanel('safe', 'This comment presents a balanced view on social media usage. No issues identified.')">No Suspicious Activity Detected</div>
+            </div>
+            <div class="comment"><strong>Sarah:</strong> We need to monitor our kids better. 
+                <div class="trust-message warning" onclick="showInfoPanel('warning', 'This comment is valid but lacks specific recommendations. Check local guidelines for more info.')">Warning: Credibility in Question</div>
+            </div>
+            <div class="comment"><strong>Rachel:</strong> Let's spread positivity everywhere! 
+                <div class="trust-message safe" onclick="showInfoPanel('safe', 'This comment encourages positive interactions and is well-supported by research. No issues identified.')">No Suspicious Activity Detected</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="user-info">
+            <img src="p2.jpg" alt="User 2" class="avatar"> <!-- User 2 avatar -->
+            <span class="username">Bob</span>
+        </div>
+        <img src="2.jpg" alt="Post 2" class="image"> <!-- Post 2 image -->
+        <p>This post highlights recent trends in social media usage among teenagers, emphasizing both positive and negative impacts.</p>
+        <div class="actions">
+            <button class="btn" onclick="toggleLike(this)"><i class="fas fa-thumbs-up"></i> <span class="like-count">30</span></button>
+            <button class="btn" onclick="toggleComments(this)"><i class="fas fa-comment"></i> Comment (10)</button>
+        </div>
+        <div class="trust-message warning" onclick="showInfoPanel('warning', 'This post contains some statistics from a questionable survey. Check credible sources like Pew Research for accurate data.')">Warning: Credibility in Question</div>
+        <div class="comments">
+            <div class="comment"><strong>Mike:</strong> It's a double-edged sword for sure. 
+                <div class="trust-message safe" onclick="showInfoPanel('safe', 'This comment presents a balanced view on social media usage. No issues identified.')">No Suspicious Activity Detected</div>
+            </div>
+            <div class="comment"><strong>Sarah:</strong> We need to monitor our kids better. 
+                <div class="trust-message warning" onclick="showInfoPanel('warning', 'This comment is valid but lacks specific recommendations. Check local guidelines for more info.')">Warning: Credibility in Question</div>
+            </div>
+            <div class="comment"><strong>Tom:</strong> Sometimes I feel overwhelmed by all the information. 
+                <div class="trust-message warning" onclick="showInfoPanel('warning', 'This comment highlights a common concern but lacks specific strategies to cope.')">Warning: Credibility in Question</div>
+            </div>
+            <div class="comment"><strong>Linda:</strong> It's important to balance screen time. 
+                <div class="trust-message safe" onclick="showInfoPanel('safe', 'This comment provides valid advice based on current health recommendations.')">No Suspicious Activity Detected</div>
+            </div>
+            <div class="comment"><strong>Eric:</strong> We should educate kids about safe online practices. 
+                <div class="trust-message safe" onclick="showInfoPanel('safe', 'This comment encourages education and is supported by various studies.')">No Suspicious Activity Detected</div>
+            </div>
+            <textarea class="comment-input" placeholder="Write a comment..."></textarea>
+        </div>
+    </div>
+    
+    <div class="post">
+        <div class="user-info">
+            <img src="p3.jpg" alt="User 3" class="avatar"> <!-- User 3 avatar -->
+            <span class="username">Charlie</span>
+        </div>
+        <img src="3.jpg" alt="Post 3" class="image"> <!-- Post 3 image -->
+        <p>This post encourages users to engage positively on social media and share uplifting stories to foster community spirit.</p>
+        <div class="actions">
+            <button class="btn" onclick="toggleLike(this)"><i class="fas fa-thumbs-up"></i> <span class="like-count">50</span></button>
+            <button class="btn" onclick="toggleComments(this)"><i class="fas fa-comment"></i> Comment (20)</button>
+        </div>
+        <div class="trust-message safe" onclick="showInfoPanel('safe', 'This post is supported by various studies showing the benefits of positive interactions online. Sources include reputable journals.')">No Suspicious Activity Detected</div>
+        <div class="comments">
+            <div class="comment"><strong>Rachel:</strong> Let's spread positivity everywhere! 
+                <div class="trust-message safe" onclick="showInfoPanel('safe', 'This comment encourages positive interactions and is well-supported by research. No issues identified.')">No Suspicious Activity Detected</div>
+            </div>
+            <div class="comment"><strong>James:</strong> Great idea, we need more of this! 
+                <div class="trust-message safe" onclick="showInfoPanel('safe', 'This comment aligns with the post's theme and promotes positivity. No issues identified.')">No Suspicious Activity Detected</div>
+            </div>
+            <div class="comment"><strong>Kate:</strong> Positivity can change the world! 
+                <div class="trust-message safe" onclick="showInfoPanel('safe', 'This comment reflects optimism and encourages community support. No issues identified.')">No Suspicious Activity Detected</div>
+            </div>
+            <div class="comment"><strong>Josh:</strong> I love sharing good news! 
+                <div class="trust-message safe" onclick="showInfoPanel('safe', 'This comment highlights the importance of sharing uplifting stories. No issues identified.')">No Suspicious Activity Detected</div>
+            </div>
+            <div class="comment"><strong>Anna:</strong> We should all strive to be better! 
+                <div class="trust-message safe" onclick="showInfoPanel('safe', 'This comment promotes self-improvement and is well-supported by motivational literature.')">No Suspicious Activity Detected</div>
+            </div>
+            <textarea class="comment-input" placeholder="Write a comment..."></textarea>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="closeInfoPanel()">
+        <div class="info-panel" id="infoPanel">
+            <span class="close-btn" onclick="closeInfoPanel()">&times;</span>
+            <h3>Information</h3>
+            <p id="infoContent"></p>
+        </div>
+    </div>
+
+    <script>
+        function toggleLike(button) {
+            const likeCountSpan = button.querySelector('.like-count');
+            let likeCount = parseInt(likeCountSpan.innerText);
+            if (button.classList.toggle('liked')) {
+                likeCount += 1; // Increase like count
+            } else {
+                likeCount -= 1; // Decrease like count
+            }
+            likeCountSpan.innerText = likeCount;
+        }
+
+        function toggleComments(button) {
+            const commentsSection = button.closest('.post').querySelector('.comments');
+            commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function showInfoPanel(type, content) {
+            document.getElementById('infoContent').innerText = content;
+            document.getElementById('overlay').style.display = 'flex';
+            document.getElementById('infoPanel').style.display = 'block';
+        }
+
+        function closeInfoPanel() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('infoPanel').style.display = 'none';
+        }
+        function toggleLike(button) {
+            const likeCountSpan = button.querySelector('.like-count');
+            let likeCount = parseInt(likeCountSpan.innerText);
+            if (button.classList.toggle('liked')) {
+                likeCount += 1; // Increase like count
+                button.classList.add('liked'); // Add animation class
+            } else {
+                likeCount -= 1; // Decrease like count
+                button.classList.remove('liked'); // Remove animation class
+            }
+            likeCountSpan.innerText = likeCount;
+        }
+    </script>
+
+</body>
+</html>
