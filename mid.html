@@ -129,6 +129,55 @@
             padding: 10px;
             margin-top: 10px;
         }
+        /* Popup Styles */
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .popup-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .popup-content h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        .popup-content p {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .popup-content button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .popup-content button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Hide popup initially */
+        .popup.hidden {
+            display: none;
+        }
         /* Flashing effect for trust messages */
         @keyframes flash {
             0% { opacity: 0; }
@@ -277,6 +326,14 @@
             <p id="infoContent"></p>
         </div>
     </div>
+    <!-- pop -->
+    <div class="popup" id="notificationPopup">
+        <div class="popup-content">
+            <h2>Welcome to Chirp!</h2>
+            <p>Stay updated with the latest social media trends and community discussions.</p>
+            <button onclick="closePopup()">Continue</button>
+        </div>
+    </div>
 
     <script>
         function toggleLike(button) {
@@ -316,6 +373,15 @@
                 button.classList.remove('liked'); // Remove animation class
             }
             likeCountSpan.innerText = likeCount;
+        }
+        // Show popup on page load
+        window.onload = function() {
+            document.getElementById('notificationPopup').classList.remove('hidden');
+        };
+
+        // Close popup function
+        function closePopup() {
+            document.getElementById('notificationPopup').classList.add('hidden');
         }
     </script>
 
